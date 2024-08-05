@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: auth-service/controllers/authController.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: auth-service/controllers/authController.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview This file contains the controller functions for authentication operations such as registering, logging in users, and changing passwords.
+ * @namespace controllers
+ * @memberof module:auth-service
+ */
+
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/auth');
+require('dotenv').config();
+
+/**
+ * Registers a new user.
+ * 
+ * @function register
+ * @memberof auth-service.authController
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {Object} res - The response object.
+ * @returns {void}
+ */
+const register = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).send('Email and password are required');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ email, password: hashedPassword });
+    res.status(201).send('User registered');
+  } catch (error) {
+    console.error('Error during user registration:', error);
+    res.status(500).send('Server error. Please try again later.');
+  }
+};
+
+/**
+ * Logs in a user.
+ * 
+ * @function login
+ * @memberof auth-service.authController
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {Object} res - The response object.
+ * @returns {void}
+ */
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (user &amp;&amp; await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.json({ token });
+    } else {
+      res.status(401).send('Invalid credentials');
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).send(error.message);
+  }
+};
+
+/**
+ * Changes a user's password.
+ * 
+ * @function changePassword
+ * @memberof auth-service.authController
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.oldPassword - The old password of the user.
+ * @param {string} req.body.newPassword - The new password of the user.
+ * @param {Object} res - The response object.
+ * @returns {void}
+ */
+const changePassword = async (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  try {
+    if (!email || !oldPassword || !newPassword) {
+      return res.status(400).send('Email, old password, and new password are required');
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).send('Old password is incorrect');
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.send('Password changed successfully');
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).send('Server error. Please try again later.');
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  changePassword,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api-gateway.html">api-gateway</a></li><li><a href="module-auth-service.html">auth-service</a></li><li><a href="module-ocr-service.html">ocr-service</a></li><li><a href="module-product-service.html">product-service</a></li><li><a href="module-user-service.html">user-service</a></li></ul><h3>Namespaces</h3><ul><li><a href="controllers.html">controllers</a></li><li><a href="db.html">db</a></li><li><a href="middleware.html">middleware</a></li><li><a href="models.html">models</a></li><li><a href="routes.html">routes</a></li><li><a href="utils.html">utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Aug 01 2024 19:25:33 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

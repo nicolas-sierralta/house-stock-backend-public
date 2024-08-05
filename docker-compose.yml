@@ -1,0 +1,141 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./api-gateway/.env
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      ocr-service:
+        condition: service_healthy
+    networks:
+      - backend
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./auth-service/.env
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      mysql-user:
+        condition: service_healthy
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ocr-service:
+    build: ./ocr-service
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./ocr-service/.env
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4002/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./product-service/.env
+    depends_on:
+      mysql-product:
+        condition: service_healthy
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4003/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-auth:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./mysql-auth/.env
+    volumes:
+      - mysql-auth-data:/var/lib/mysql
+      - ./mysql-auth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-user:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    env_file:
+      - ./mysql-user/.env
+    volumes:
+      - mysql-user-data:/var/lib/mysql
+      - ./mysql-user/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-product:
+    image: mysql:latest
+    ports:
+      - "3308:3306"
+    env_file:
+      - ./mysql-product/.env
+    volumes:
+      - mysql-product-data:/var/lib/mysql
+      - ./mysql-product/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mysql-auth-data:
+  mysql-product-data:
+  mysql-user-data:

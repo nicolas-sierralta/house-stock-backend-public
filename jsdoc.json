@@ -1,0 +1,29 @@
+{
+    "source": {
+        "include": [
+            "api-gateway",
+            "auth-service",
+            "ocr-service",
+            "product-service",
+            "user-service"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_|node_modules"
+    },
+    "opts": {
+        "destination": "./docs",
+        "recurse": true
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "markdown": {
+        "parser": "gfm",
+        "hardwrap": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "readme": "README.md"
+}

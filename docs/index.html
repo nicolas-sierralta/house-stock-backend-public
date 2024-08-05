@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>House Stock Backend</h1>
+<p>This project demonstrates a microservices architecture using Docker. It consists of several independent services that interact with each other through an API Gateway and a series of backend services. Below is a description of each service, how to configure them, and how to run them.</p>
+<h2>Services</h2>
+<h3>api-gateway</h3>
+<p>The entry point for requests to the various services. It routes traffic to the appropriate services.</p>
+<ul>
+<li><strong>Port</strong>: <code>3000</code></li>
+<li><strong>Dependencies</strong>: <code>auth-service</code>, <code>product-service</code>, <code>ocr-service</code></li>
+</ul>
+<h3>auth-service</h3>
+<p>Handles user authentication and registration. Allows users to register, log in, and change passwords.</p>
+<ul>
+<li><strong>Port</strong>: <code>4000</code></li>
+<li><strong>Dependencies</strong>: <code>mysql-auth</code></li>
+</ul>
+<h3>user-service</h3>
+<p>Manages user information, including creating, updating, and retrieving user data.</p>
+<ul>
+<li><strong>Port</strong>: <code>4001</code></li>
+<li><strong>Dependencies</strong>: <code>mysql-user</code></li>
+</ul>
+<h3>ocr-service</h3>
+<p>Provides Optical Character Recognition (OCR) capabilities to process documents and receipts.</p>
+<ul>
+<li><strong>Port</strong>: <code>4002</code></li>
+</ul>
+<h3>product-service</h3>
+<p>Manages products in an inventory, allowing for adding, updating, and deleting products, as well as syncing inventory.</p>
+<ul>
+<li><strong>Port</strong>: <code>4003</code></li>
+<li><strong>Dependencies</strong>: <code>mysql-product</code></li>
+</ul>
+<h3>MySQL Databases</h3>
+<p>Each service that requires data persistence uses a separate MySQL database:</p>
+<ul>
+<li><strong>mysql-auth</strong>: Database for <code>auth-service</code></li>
+<li><strong>mysql-user</strong>: Database for <code>user-service</code></li>
+<li><strong>mysql-product</strong>: Database for <code>product-service</code></li>
+</ul>
+<h2>Configuration</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li>Docker</li>
+<li>Docker Compose</li>
+</ul>
+<h3>Environment Variables</h3>
+<p>Ensure you have <code>.env</code> files for each service (<code>./api-gateway/.env</code>, <code>./auth-service/.env</code>, etc.). These files should contain the necessary credentials and configurations for each service.</p>
+<p>Example <code>.env</code> for MySQL services:</p>
+<p>env<br>
+MYSQL_ROOT_PASSWORD=your_root_password<br>
+MYSQL_DATABASE=your_database_name<br>
+MYSQL_USER=your_user<br>
+MYSQL_PASSWORD=your_password</p>
+<h3>Start up</h3>
+<p>docker-compose up --build</p>
+<h2>Running Services on Separate Machines</h2>
+<p>If you prefer to run each service on separate machines, ensure that you update the environment variables in each service’s <code>.env</code> file to point to the correct IP addresses or hostnames of the other services.</p>
+<h3>Directory Structure</h3>
+<ul>
+<li><strong>api-gateway/</strong>: Code and configuration for the API Gateway.</li>
+<li><strong>auth-service/</strong>: Code and configuration for the authentication service.</li>
+<li><strong>ocr-service/</strong>: Code and configuration for the OCR service.</li>
+<li><strong>product-service/</strong>: Code and configuration for the product service.</li>
+<li><strong>user-service/</strong>: Code and configuration for the user service.</li>
+<li><strong>mysql-auth/</strong>: Configuration and initial data for the authentication database.</li>
+<li><strong>mysql-user/</strong>: Configuration and initial data for the user database.</li>
+<li><strong>mysql-product/</strong>: Configuration and initial data for the product database.</li>
+</ul>
+<h2>More info</h2>
+<p>For more information, see the documentation generated with JSDoc in the ./docs folder.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api-gateway.html">api-gateway</a></li><li><a href="module-auth-service.html">auth-service</a></li><li><a href="module-ocr-service.html">ocr-service</a></li><li><a href="module-product-service.html">product-service</a></li><li><a href="module-user-service.html">user-service</a></li></ul><h3>Namespaces</h3><ul><li><a href="controllers.html">controllers</a></li><li><a href="db.html">db</a></li><li><a href="middleware.html">middleware</a></li><li><a href="models.html">models</a></li><li><a href="routes.html">routes</a></li><li><a href="utils.html">utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Aug 01 2024 19:25:33 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
